@@ -22,6 +22,7 @@ class TaskBoardViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(created_by=self.request.user)
 
 
+# TODO: implement pagination
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
@@ -31,3 +32,6 @@ class TaskViewSet(viewsets.ModelViewSet):
     ]
 
     lookup_field = "task_uuid"
+
+    def get_queryset(self):
+        return self.queryset.filter(task_board__created_by=self.request.user)
