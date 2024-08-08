@@ -27,6 +27,13 @@ class TaskBoardAdmin(admin.ModelAdmin):
         "description",
         "created_at",
         "updated_at",
+        "task_count",
     )
     search_fields = ("name", "description")
     list_filter = ("created_at", "updated_at")
+    readonly_fields = ("created_by", "task_count")
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:  # If the object is being created
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
