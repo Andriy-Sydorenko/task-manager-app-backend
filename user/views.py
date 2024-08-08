@@ -1,30 +1,36 @@
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.decorators import permission_classes as action_permission_classes
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from user.models import User
-from user.serializers import MeSerializer, RegistrationSerializer
+from user.serializers import RegistrationSerializer, UserSerializer
 
 
-# TODO: add validation for user registration
-class MeViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = MeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
 
     def get_queryset(self):
         return self.queryset.filter(email=self.request.user.email)
 
     @action(detail=False, methods=["get"])
+    @action_permission_classes(
+        [
+            permissions.IsAuthenticated,
+        ]
+    )
     def me(self, request):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
 
-
-class RegistrationView(APIView):
-    @staticmethod
-    def post(request):
+    @action_permission_classes(
+        [
+            permissions.AllowAny,
+        ]
+    )
+    def create(self, request, *args, **kwargs):
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

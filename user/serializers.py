@@ -1,13 +1,17 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from user.models import User
 
 
-class MeSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        fields = (
+            "email",
+            "nickname",
+            "profile_picture",
+            "date_joined",
+        )
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -15,13 +19,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("email", "password", "first_name", "last_name")
+        fields = ("email", "nickname", "password")
 
     def create(self, validated_data):
-        user = get_user_model().objects.create_user(
+        user = User(
             email=validated_data["email"],
-            password=validated_data["password"],
-            first_name=validated_data.get("first_name", ""),
-            last_name=validated_data.get("last_name", ""),
+            nickname=validated_data["nickname"],
         )
-        return user
+        user.set_password(validated_data["password"])
+        user.save()
+        user_data = self.to_representation(user)
+        user_data.pop("password", None)
+        return user_data
