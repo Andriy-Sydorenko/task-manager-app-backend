@@ -10,17 +10,14 @@ from user.serializers import RegistrationSerializer, UserSerializer
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return self.queryset
         return self.queryset.filter(email=self.request.user.email)
 
     @action(detail=False, methods=["get"])
-    @action_permission_classes(
-        [
-            permissions.IsAuthenticated,
-        ]
-    )
     def me(self, request):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
