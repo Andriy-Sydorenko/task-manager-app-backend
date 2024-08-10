@@ -5,7 +5,10 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from config.views import HelloView
+
 urlpatterns = [
+    path("", HelloView.as_view(), name="hello"),
     path("admin/", admin.site.urls),
     path("user/", include("user.urls")),
     path("api/", include("task_board.urls")),
