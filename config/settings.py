@@ -175,8 +175,8 @@ REST_FRAMEWORK = {
 }
 
 # Disable browsable API in production
-# if not DEBUG:
-#     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
+if not DEBUG:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "API Documentation",
