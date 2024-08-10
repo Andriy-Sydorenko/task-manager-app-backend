@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_view
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -6,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from user.documentation import USER_LOGOUT_DOCS, USER_REGISTRATION_DOCS
 from user.models import User
 from user.permissions import IsUnauthenticated
 from user.serializers import RegistrationSerializer, UserSerializer
@@ -27,6 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+@extend_schema_view(**USER_REGISTRATION_DOCS)
 class RegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -44,6 +47,7 @@ class LoginView(TokenObtainPairView):
     ]
 
 
+@extend_schema_view(**USER_LOGOUT_DOCS)
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
