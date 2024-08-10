@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "rest_framework",
     "rest_framework_simplejwt",
+    "drf_spectacular",
     "user",
     "task_board",
 ]
@@ -160,11 +161,19 @@ AUTH_USER_MODEL = "user.User"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Disable browsable API in production
 # if not DEBUG:
 #     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "API Documentation",
+    "DESCRIPTION": "API documentation for the project",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 
 # TODO: Change back to default numbers when needed
 SIMPLE_JWT = {
