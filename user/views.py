@@ -1,7 +1,7 @@
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.decorators import permission_classes as action_permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from user.models import User
 from user.serializers import RegistrationSerializer, UserSerializer
@@ -22,12 +22,11 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
 
-    @action_permission_classes(
-        [
-            permissions.AllowAny,
-        ]
-    )
-    def create(self, request, *args, **kwargs):
+
+class RegistrationView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
