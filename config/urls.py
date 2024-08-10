@@ -3,17 +3,20 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.static import serve
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from config.views import HelloView
+from user.views import LoginView, LogoutView, RegistrationView
 
 urlpatterns = [
     path("", HelloView.as_view(), name="hello"),
     path("admin/", admin.site.urls),
     path("user/", include("user.urls")),
     path("api/", include("task_board.urls")),
-    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("register/", RegistrationView.as_view(), name="register"),
+    path("login/", LoginView.as_view(), name="login"),
     path("refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("logout/", LogoutView.as_view(), name="logout"),
     re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     re_path(r"^static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}),
     path("__debug__/", include("debug_toolbar.urls")),

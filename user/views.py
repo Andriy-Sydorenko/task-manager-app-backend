@@ -1,11 +1,13 @@
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from user.models import User
+from user.permissions import IsUnauthenticated
 from user.serializers import RegistrationSerializer, UserSerializer
 
 
@@ -37,7 +39,9 @@ class RegistrationView(APIView):
 
 
 class LoginView(TokenObtainPairView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [
+        IsUnauthenticated,
+    ]
 
 
 class LogoutView(APIView):
@@ -49,5 +53,5 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except KeyError:
+            raise ValidationError(detail="Refresh token wasn't sent with logout request!")
