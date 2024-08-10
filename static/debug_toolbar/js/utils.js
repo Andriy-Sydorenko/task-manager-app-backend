@@ -1,6 +1,5 @@
 const $$ = {
     on(root, eventName, selector, fn) {
-        root.removeEventListener(eventName, fn);
         root.addEventListener(eventName, function (event) {
             const target = event.target.closest(selector);
             if (root.contains(target)) {
@@ -75,11 +74,7 @@ function ajax(url, init) {
     return fetch(url, init)
         .then(function (response) {
             if (response.ok) {
-                    return response.json().catch(function(error){
-                        return Promise.reject(
-                            new Error("The response  is a invalid Json object : " + error)
-                        );
-                    });
+                return response.json();
             }
             return Promise.reject(
                 new Error(response.status + ": " + response.statusText)
@@ -109,34 +104,4 @@ function ajaxForm(element) {
     return ajax(url, ajaxData);
 }
 
-function replaceToolbarState(newStoreId, data) {
-    const djDebug = document.getElementById("djDebug");
-    djDebug.setAttribute("data-store-id", newStoreId);
-    // Check if response is empty, it could be due to an expired storeId.
-    Object.keys(data).forEach(function (panelId) {
-        const panel = document.getElementById(panelId);
-        if (panel) {
-            panel.outerHTML = data[panelId].content;
-            document.getElementById("djdt-" + panelId).outerHTML =
-                data[panelId].button;
-        }
-    });
-}
-
-function debounce(func, delay) {
-    let timer = null;
-    let resolves = [];
-
-    return function (...args) {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            const result = func(...args);
-            resolves.forEach((r) => r(result));
-            resolves = [];
-        }, delay);
-
-        return new Promise((r) => resolves.push(r));
-    };
-}
-
-export { $$, ajax, ajaxForm, replaceToolbarState, debounce };
+export { $$, ajax, ajaxForm };
