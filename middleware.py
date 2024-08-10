@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponsePermanentRedirect
 
 
 class CloseUrlWithSlashMiddleware:
@@ -6,8 +6,7 @@ class CloseUrlWithSlashMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        print(request.method)
-        if request.method == "POST" and not request.path.endswith("/"):
-            return JsonResponse({"error": "ЗАКРИВАЙ СЛЕШ НА ПОСТ ПІДАРАС"}, status=400)
+        if request.method in ["POST", "PATCH", "PUT", "DELETE"] and not request.path.endswith("/"):
+            return HttpResponsePermanentRedirect(request.path + "/")
         response = self.get_response(request)
         return response
