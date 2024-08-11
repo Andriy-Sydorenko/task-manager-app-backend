@@ -11,5 +11,5 @@ router.register(r"tasks", TaskViewSet)
 urlpatterns = [
     path("", include(router.urls)),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
 ]

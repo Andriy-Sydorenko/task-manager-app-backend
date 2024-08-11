@@ -4,13 +4,18 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from user.documentation import USER_LOGOUT_DOCS, USER_REGISTRATION_DOCS
 from user.models import User
 from user.permissions import IsUnauthenticated
-from user.serializers import RegistrationSerializer, UserSerializer
+from user.serializers import (
+    CustomTokenObtainPairSerializer,
+    RegistrationSerializer,
+    UserSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -32,6 +37,7 @@ class UserViewSet(viewsets.ModelViewSet):
 @extend_schema_view(**USER_REGISTRATION_DOCS)
 class RegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
+    serializer_class = RegistrationSerializer
 
     def post(self, request):
         serializer = RegistrationSerializer(data=request.data)
@@ -45,6 +51,7 @@ class LoginView(TokenObtainPairView):
     permission_classes = [
         IsUnauthenticated,
     ]
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 @extend_schema_view(**USER_LOGOUT_DOCS)
@@ -56,6 +63,8 @@ class LogoutView(APIView):
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
+            return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
         except KeyError:
             raise ValidationError(detail="Refresh token wasn't sent with logout request!")
+        except TokenError as e:
+            raise ValidationError(detail=e)
