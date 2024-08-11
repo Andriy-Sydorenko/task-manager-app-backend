@@ -41,5 +41,5 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             return super().validate(attrs)
         except AuthenticationFailed:
             raise ValidationError(
-                {"detail": "No active account found with the given credentials"}, code=status.HTTP_400_BAD_REQUEST
+                {"email": "No active account found with the given credentials"}, code=status.HTTP_400_BAD_REQUEST
             )
