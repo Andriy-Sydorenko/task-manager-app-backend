@@ -32,7 +32,8 @@ SECRET_KEY = (
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if utils.get_git_branch_name() == "develop" else False
+# DEBUG = True if utils.get_git_branch_name() == "develop" else False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "*",
@@ -62,7 +63,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "middleware.CloseUrlWithSlashMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -104,24 +104,24 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-if not DEBUG:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRESQL_DB_NAME"),
-            "USER": os.getenv("POSTGRESQL_DB_USER"),
-            "PASSWORD": os.getenv("POSTGRESQL_DB_PASSWORD"),
-            "HOST": os.getenv("POSTGRESQL_DB_HOST"),
-            "PORT": os.getenv("POSTGRESQL_DB_PORT"),
-        }
+# if not DEBUG:
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRESQL_DB_NAME"),
+        "USER": os.getenv("POSTGRESQL_DB_USER"),
+        "PASSWORD": os.getenv("POSTGRESQL_DB_PASSWORD"),
+        "HOST": os.getenv("POSTGRESQL_DB_HOST"),
+        "PORT": os.getenv("POSTGRESQL_DB_PORT"),
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+}
+# else:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         }
+#     }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
