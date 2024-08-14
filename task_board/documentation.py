@@ -34,9 +34,35 @@ TASK_BOARD_DOCS = {
         description="Create a new task board with the provided data.",
         examples=[
             OpenApiExample(
-                "Example for create", value={"name": "Project Beta", "description": "Tasks for Project Beta"}
+                "Example for create",
+                value={
+                    "name": "Project Beta",
+                    "description": "Tasks for Project Beta",
+                },
             )
         ],
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                },
+                "required": ["name", "description"],
+            }
+        },
+        responses={
+            201: {
+                "type": "object",
+                "properties": {
+                    "board_uuid": {"type": "string", "format": "uuid"},
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"},
+                },
+            }
+        },
     ),
     "update": extend_schema(
         summary="Update a task board",
@@ -108,13 +134,37 @@ TASK_DOCS = {
             OpenApiExample(
                 "Example for create",
                 value={
-                    "name": "Task 2",
-                    "description": "Description for Task 2",
+                    "name": "Wash hands",
+                    "description": "Everybody should wash their hands.",
                     "task_board_uuid": "123e4567-e89b-12d3-a456-426614174000",
-                    "status": "TODO",
                 },
             )
         ],
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "task_board_uuid": {"type": "string", "format": "uuid"},
+                },
+                "required": ["name", "description", "task_board_uuid"],
+            }
+        },
+        responses={
+            201: {
+                "type": "object",
+                "properties": {
+                    "task_uuid": {"type": "string", "format": "uuid"},
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "status": {"type": "string"},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"},
+                    "postponed_to": {"type": ["string", "null"], "format": "date-time"},
+                },
+            }
+        },
     ),
     "update": extend_schema(
         summary="Update a task",
