@@ -18,6 +18,9 @@ class TaskBoard(models.Model):
     def task_count(self):
         return self.task_set.count()
 
+    def done_task_count(self):
+        return self.task_set.filter(status=TaskStatus.DONE).count()
+
     def __str__(self):
         return self.name
 
