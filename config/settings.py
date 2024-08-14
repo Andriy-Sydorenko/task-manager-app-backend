@@ -34,6 +34,7 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True if utils.get_git_branch_name() == "develop" else False
 DEBUG = True
+
 ALLOWED_HOSTS = [
     "*",
 ]
@@ -62,7 +63,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "middleware.CloseUrlWithSlashMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
