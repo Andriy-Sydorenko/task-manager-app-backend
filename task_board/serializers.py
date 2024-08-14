@@ -62,7 +62,23 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
 
 class TaskBoardSerializer(serializers.ModelSerializer):
+    task_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = TaskBoard
+        fields = (
+            "board_uuid",
+            "name",
+            "description",
+            "task_count",
+            "created_at",
+            "updated_at",
+        )
+
+
+class TaskBoarDetailSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(many=True, read_only=True, source="task_set")
+    task_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = TaskBoard
@@ -71,6 +87,7 @@ class TaskBoardSerializer(serializers.ModelSerializer):
             "board_uuid",
             "name",
             "description",
+            "task_count",
             "created_at",
             "updated_at",
         )

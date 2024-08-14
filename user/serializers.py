@@ -46,6 +46,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             )
 
 
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(required=True)
+
+
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
 

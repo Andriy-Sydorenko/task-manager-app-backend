@@ -17,6 +17,7 @@ from user.documentation import USER_LOGOUT_DOCS, USER_REGISTRATION_DOCS
 from user.permissions import IsUnauthenticated
 from user.serializers import (
     CustomTokenObtainPairSerializer,
+    ForgotPasswordSerializer,
     RegistrationSerializer,
     UserSerializer,
 )
@@ -72,6 +73,7 @@ class LogoutView(APIView):
 
 
 class ForgotPasswordView(APIView):
+    serializer_class = ForgotPasswordSerializer
     permission_classes = [
         IsUnauthenticated,
     ]
