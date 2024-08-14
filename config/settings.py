@@ -73,7 +73,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 # TODO: specify exact origin and allow only that
 # CORS_ALLOWED_ORIGINS = [
