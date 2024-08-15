@@ -63,6 +63,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
 class TaskBoardSerializer(serializers.ModelSerializer):
     task_count = serializers.IntegerField(read_only=True)
+    in_progress_task_count = serializers.IntegerField(read_only=True)
     done_task_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -72,6 +73,7 @@ class TaskBoardSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "task_count",
+            "in_progress_task_count",
             "done_task_count",
             "created_at",
             "updated_at",
@@ -81,6 +83,7 @@ class TaskBoardSerializer(serializers.ModelSerializer):
 class TaskBoarDetailSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(many=True, read_only=True, source="task_set")
     task_count = serializers.IntegerField(read_only=True)
+    in_progress_task_count = serializers.IntegerField(read_only=True)
     done_task_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -91,6 +94,7 @@ class TaskBoarDetailSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "task_count",
+            "in_progress_task_count",
             "done_task_count",
             "created_at",
             "updated_at",
