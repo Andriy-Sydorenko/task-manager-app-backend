@@ -7,6 +7,7 @@ from task_board import documentation
 from task_board.models import Task, TaskBoard
 from task_board.serializers import (
     TaskBoardCreateSerializer,
+    TaskBoarDetailSerializer,
     TaskBoardSerializer,
     TaskCreateSerializer,
     TaskSerializer,
@@ -14,6 +15,10 @@ from task_board.serializers import (
 )
 
 
+# TODO: implement pagination
+# TODO: implement ordering
+# TODO: implement filtering
+# TODO: implement search
 @extend_schema_view(**documentation.TASK_BOARD_DOCS)
 class TaskBoardViewSet(viewsets.ModelViewSet):
     queryset = TaskBoard.objects.all()
@@ -35,6 +40,8 @@ class TaskBoardViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "create":
             return TaskBoardCreateSerializer
+        if self.action == "retrieve" or self.action == "partial_update":
+            return TaskBoarDetailSerializer
         return super().get_serializer_class()
 
 
