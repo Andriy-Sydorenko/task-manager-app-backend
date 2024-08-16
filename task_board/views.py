@@ -46,6 +46,9 @@ class TaskBoardViewSet(viewsets.ModelViewSet):
 
 
 # TODO: implement pagination
+# TODO: implement ordering
+# TODO: implement filtering
+# TODO: implement search
 @extend_schema_view(**documentation.TASK_DOCS)
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
