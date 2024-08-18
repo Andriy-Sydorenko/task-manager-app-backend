@@ -91,7 +91,8 @@ class ForgotPasswordView(APIView):
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         # TODO: here should be frontend URL
-        reset_link = f"{request.build_absolute_uri('/reset-password/')}?uid={uid}&token={token}"
+        reset_link = f"{settings.FRONTEND_URL}/reset-password/?uid={uid}&token={token}"
+        print(reset_link)
 
         subject = "Password Reset Request"
         message = render_to_string(
@@ -129,7 +130,7 @@ class ResetPasswordView(APIView):
         new_password = serializer.validated_data["new_password"]
 
         if not uidb64 or not token or not new_password:
-            raise ValidationError({"error": "uid, token and new_password are required"})
+            raise ValidationError("uid, token and new_password are required")
 
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
@@ -143,4 +144,4 @@ class ResetPasswordView(APIView):
 
             return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
         else:
-            raise ValidationError({"error": "Reset password link is expired!"})
+            raise ValidationError("Reset password link is expired!")
