@@ -1,47 +1,43 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from drf_spectacular.utils import extend_schema_view
-from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import action
+from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from user import utils
-from user.documentation import USER_LOGOUT_DOCS, USER_REGISTRATION_DOCS
+from user import documentation, utils
 from user.permissions import IsUnauthenticated
 from user.serializers import (
     CustomTokenObtainPairSerializer,
     ForgotPasswordSerializer,
+    LogoutSerializer,
+    MeSerializer,
+    MeUpdateSerializer,
     RegistrationSerializer,
     ResetPasswordSerializer,
-    UserSerializer,
 )
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = get_user_model().objects.all()
-    serializer_class = UserSerializer
+@extend_schema_view(**documentation.ME_DOCS)
+class MeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return self.queryset
-        return self.queryset.filter(email=self.request.user.email)
+    def get(self, request):
+        serializer = MeSerializer(request.user)
+        return Response(serializer.data)
 
-    @action(detail=False, methods=["get"])
-    def me(self, request):
-        serializer = self.get_serializer(request.user)
+    def patch(self, request):
+        serializer = MeUpdateSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
 
 
-@extend_schema_view(**USER_REGISTRATION_DOCS)
+@extend_schema_view(**documentation.USER_REGISTRATION_DOCS)
 class RegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegistrationSerializer
@@ -54,6 +50,7 @@ class RegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema_view(**documentation.USER_LOGIN_DOCS)
 class LoginView(TokenObtainPairView):
     permission_classes = [
         IsUnauthenticated,
@@ -61,9 +58,10 @@ class LoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-@extend_schema_view(**USER_LOGOUT_DOCS)
+@extend_schema_view(**documentation.USER_LOGOUT_DOCS)
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = LogoutSerializer
 
     def post(self, request):
         try:
@@ -74,10 +72,12 @@ class LogoutView(APIView):
             raise ValidationError(detail="Refresh token wasn't sent with logout request!")
 
 
+@extend_schema_view(**documentation.FORGOT_PASSWORD_DOCS)
 class ForgotPasswordView(APIView):
     permission_classes = [
         IsUnauthenticated,
     ]
+    serializer_class = ForgotPasswordSerializer
 
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
@@ -87,13 +87,7 @@ class ForgotPasswordView(APIView):
             raise ValidationError({"error": "Email is required"})
 
         user = get_user_model().objects.get(email=email)
-
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        # TODO: here should be frontend URL
-        reset_link = f"{settings.FRONTEND_URL}/reset-password/?uid={uid}&token={token}"
-        print(reset_link)
-
+        reset_link = utils.create_reset_password_url(user)
         subject = "Password Reset Request"
         message = render_to_string(
             "password_reset_email.html",
@@ -118,6 +112,7 @@ class ForgotPasswordView(APIView):
         )
 
 
+@extend_schema_view(**documentation.RESET_PASSWORD_DOCS)
 class ResetPasswordView(APIView):
     permission_classes = [IsUnauthenticated]
 
@@ -125,23 +120,8 @@ class ResetPasswordView(APIView):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        uidb64 = serializer.validated_data["uid"]
+        uid = serializer.validated_data["uid"]
         token = serializer.validated_data["token"]
         new_password = serializer.validated_data["new_password"]
 
-        if not uidb64 or not token or not new_password:
-            raise ValidationError("uid, token and new_password are required")
-
-        try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = get_user_model().objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-            raise ValidationError({"error": "Invalid uid"})
-
-        if user and default_token_generator.check_token(user, token):
-            user.set_password(new_password)
-            user.save()
-
-            return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
-        else:
-            raise ValidationError("Reset password link is expired!")
+        return utils.set_new_user_password(uid, token, new_password)
