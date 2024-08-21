@@ -1,7 +1,6 @@
 from django.db.models import Prefetch
-from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import permissions, status, viewsets
-from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema_view
+from rest_framework import permissions, viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from task_board import documentation
@@ -45,10 +44,6 @@ class TaskBoardViewSet(viewsets.ModelViewSet):
             return TaskBoarDetailSerializer
         return super().get_serializer_class()
 
-    @extend_schema(exclude=True)
-    def update(self, request, *args, **kwargs):
-        return Response({"detail": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 # TODO: implement pagination
 # TODO: implement ordering
@@ -74,7 +69,3 @@ class TaskViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return TaskCreateSerializer
         return super().get_serializer_class()
-
-    @extend_schema(exclude=True)
-    def update(self, request, *args, **kwargs):
-        return Response({"detail": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
