@@ -41,6 +41,7 @@ ALLOWED_HOSTS = [
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 # Application definition
 
@@ -73,13 +74,9 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-
-# TODO: specify exact origin and allow only that
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "https://your-frontend-domain.com",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+]
 
 ROOT_URLCONF = "config.urls"
 

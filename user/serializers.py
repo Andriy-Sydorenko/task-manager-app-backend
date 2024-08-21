@@ -4,11 +4,12 @@ from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from user.models import User
+from user.utils import validate_password_length
 
 
-class UserSerializer(serializers.ModelSerializer):
+class MeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = get_user_model()
         fields = (
             "email",
             "nickname",
@@ -17,12 +18,46 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
+class MeUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "nickname",
+            "profile_picture",
+            "password",
+        )
+
+    @staticmethod
+    def validate_password(value):
+        validate_password_length(value)
+        return value
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", "")
+        instance = super().update(instance, validated_data)
+        if password:
+            instance.set_password(password)
+            instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["email"] = instance.email
+        representation["date_joined"] = instance.date_joined
+        return representation
+
+
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
         fields = ("email", "nickname", "password")
+
+    @staticmethod
+    def validate_password(value):
+        validate_password_length(value)
+        return value
 
     def create(self, validated_data):
         user = User(

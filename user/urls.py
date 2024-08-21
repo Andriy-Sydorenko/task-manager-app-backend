@@ -1,11 +1,7 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from user.views import UserViewSet
-
-router = DefaultRouter()
-router.register(r"", UserViewSet)
+from user.views import MeView
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("", MeView.as_view(), name="me"),
 ]
