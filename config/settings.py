@@ -76,6 +76,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     FRONTEND_URL,
+    "http://localhost:5173",
 ]
 
 ROOT_URLCONF = "config.urls"
