@@ -4,7 +4,9 @@ from rest_framework import permissions, viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from task_board import documentation
+from task_board.mixins import FilterMixin
 from task_board.models import Task, TaskBoard
+from task_board.pagination import Pagination
 from task_board.serializers import (
     TaskBoardCreateSerializer,
     TaskBoarDetailSerializer,
@@ -15,18 +17,15 @@ from task_board.serializers import (
 )
 
 
-# TODO: implement pagination
-# TODO: implement ordering
-# TODO: implement filtering
-# TODO: implement search
 @extend_schema_view(**documentation.TASK_BOARD_DOCS)
-class TaskBoardViewSet(viewsets.ModelViewSet):
+class TaskBoardViewSet(viewsets.ModelViewSet, FilterMixin):
     queryset = TaskBoard.objects.all()
     serializer_class = TaskBoardSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [
         JWTAuthentication,
     ]
+    pagination_class = Pagination
 
     lookup_field = "board_uuid"
 
@@ -44,11 +43,17 @@ class TaskBoardViewSet(viewsets.ModelViewSet):
             return TaskBoarDetailSerializer
         return super().get_serializer_class()
 
+    def filter_queryset(self, queryset):
+        params = self.request.query_params
+        name = params.get("name")
+        description = params.get("description")
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        if description:
+            queryset = queryset.filter(description__icontains=description)
+        return queryset.filter(created_by=self.request.user)
 
-# TODO: implement pagination
-# TODO: implement ordering
-# TODO: implement filtering
-# TODO: implement search
+
 @extend_schema_view(**documentation.TASK_DOCS)
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
@@ -57,6 +62,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     authentication_classes = [
         JWTAuthentication,
     ]
+    pagination_class = Pagination
 
     lookup_field = "task_uuid"
 
