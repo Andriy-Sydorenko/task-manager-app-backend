@@ -27,6 +27,9 @@ class TaskBoard(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ["-created_at"]
+
 
 class Task(models.Model):
     task_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -46,3 +49,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ["-created_at"]
