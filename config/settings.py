@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "drf_spectacular",
-    "django_celery_beat",
     "user",
     "task_board",
 ]
@@ -213,9 +212,3 @@ EMAIL_HOST_PASSWORD = os.getenv("GOOGLE_APP_PASSWORD")
 RENDER_BACKEND_URL = os.getenv("RENDER_BACKEND_URL")
 # Request interval in seconds
 PING_PONG_INTERVAL = 40
-
-CELERY_BROKER_URL = "redis://localhost:6379/0"  # You can use RabbitMQ or another broker
-CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

@@ -21,9 +21,7 @@ gunicorn = "^23.0.0"
 drf-spectacular = "^0.27.2"
 django-cors-headers = "^4.4.0"
 requests = "^2.32.3"
-celery = "^5.4.0"
-django-celery-beat = "^2.7.0"
-redis = "^5.0.8"
+apscheduler = "^3.10.4"
 
 
 [tool.black]
