@@ -1,11 +1,16 @@
+from datetime import timedelta
+
 from django.db.models import Prefetch
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema_view
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from task_board import documentation
 from task_board.mixins import FilterMixin
-from task_board.models import Task, TaskBoard
+from task_board.models import DailyTaskStats, Task, TaskBoard
 from task_board.pagination import Pagination
 from task_board.serializers import (
     TaskBoardCreateSerializer,
@@ -43,19 +48,9 @@ class TaskBoardViewSet(viewsets.ModelViewSet, FilterMixin):
             return TaskBoarDetailSerializer
         return super().get_serializer_class()
 
-    def filter_queryset(self, queryset):
-        params = self.request.query_params
-        name = params.get("name")
-        description = params.get("description")
-        if name:
-            queryset = queryset.filter(name__icontains=name)
-        if description:
-            queryset = queryset.filter(description__icontains=description)
-        return queryset.filter(created_by=self.request.user)
-
 
 @extend_schema_view(**documentation.TASK_DOCS)
-class TaskViewSet(viewsets.ModelViewSet):
+class TaskViewSet(viewsets.ModelViewSet, FilterMixin):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -75,3 +70,23 @@ class TaskViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return TaskCreateSerializer
         return super().get_serializer_class()
+
+    @action(detail=False, methods=["get"], url_path="dashboard")
+    def dashboard(self, request):
+        end_date = timezone.localtime().date()
+        start_date = end_date - timedelta(days=7)
+        # TODO: IMPLEMENT RANGE FILTER SO USER CAN SEE NOT ONLY FOR LAST 7 DAYS
+        stats = DailyTaskStats.objects.filter(user=request.user, date__range=[start_date, end_date]).values(
+            "date", "todo_count", "in_progress_count", "done_count"
+        )
+
+        response_data = {
+            stat["date"].isoformat(): {
+                "TODO": stat["todo_count"],
+                "IN_PROGRESS": stat["in_progress_count"],
+                "DONE": stat["done_count"],
+            }
+            for stat in stats
+        }
+
+        return Response(response_data)

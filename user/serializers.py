@@ -66,9 +66,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         )
         user.set_password(validated_data["password"])
         user.save()
-        user_data = self.to_representation(user)
-        user_data.pop("password", None)
-        return user_data
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

@@ -47,8 +47,19 @@ class Task(models.Model):
     # TODO: add task postpone functionality
     postponed_to = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def __str__(self):
         return self.name
 
+
+class DailyTaskStats(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField()
+    todo_count = models.PositiveIntegerField(default=0)
+    in_progress_count = models.PositiveIntegerField(default=0)
+    done_count = models.PositiveIntegerField(default=0)
+
     class Meta:
-        ordering = ["-created_at"]
+        unique_together = ("date",)
