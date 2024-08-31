@@ -1,4 +1,11 @@
-from drf_spectacular.utils import OpenApiExample, extend_schema
+from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
+
+pagination_parameters = [
+    OpenApiParameter(name="page", description="Page number", required=False, type=int, location="query"),
+    OpenApiParameter(
+        name="page-size", description="Number of items per page", required=False, type=int, location="query"
+    ),
+]
 
 TASK_BOARD_DOCS = {
     "list": extend_schema(
@@ -14,6 +21,7 @@ TASK_BOARD_DOCS = {
                 },
             )
         ],
+        parameters=pagination_parameters,
     ),
     "retrieve": extend_schema(
         summary="Retrieve a task board",
@@ -107,6 +115,7 @@ TASK_DOCS = {
                 },
             )
         ],
+        parameters=pagination_parameters,
     ),
     "retrieve": extend_schema(
         summary="Retrieve a task",
