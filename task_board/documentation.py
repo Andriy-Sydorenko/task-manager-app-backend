@@ -3,7 +3,7 @@ from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schem
 pagination_parameters = [
     OpenApiParameter(name="page", description="Page number", required=False, type=int, location="query"),
     OpenApiParameter(
-        name="page-size", description="Number of items per page", required=False, type=int, location="query"
+        name="pageSize", description="Number of items per page", required=False, type=int, location="query"
     ),
 ]
 
