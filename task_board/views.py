@@ -73,9 +73,13 @@ class TaskViewSet(viewsets.ModelViewSet, FilterMixin):
 
     @action(detail=False, methods=["get"], url_path="dashboard")
     def dashboard(self, request):
-        end_date = timezone.localtime().date()
-        start_date = end_date - timedelta(days=7)
-        # TODO: IMPLEMENT RANGE FILTER SO USER CAN SEE NOT ONLY FOR LAST 7 DAYS
+        query_params = request.query_params
+        start_date = query_params.get("start_date")
+        end_date = query_params.get("end_date")
+        if not start_date and not end_date:
+            end_date = timezone.localtime().date()
+            start_date = end_date - timedelta(days=7)
+
         stats = DailyTaskStats.objects.filter(user=request.user, date__range=[start_date, end_date]).values(
             "date", "todo_count", "in_progress_count", "done_count"
         )

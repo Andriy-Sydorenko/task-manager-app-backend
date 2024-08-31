@@ -17,7 +17,6 @@ def track_previous_status_signal(sender, instance, **kwargs):
 def update_daily_task_stats_signal(sender, instance, **kwargs):
 
     today = timezone.localtime().date()
-    print(today)
     stats, created = DailyTaskStats.objects.get_or_create(date=today, user=instance.task_board.created_by)
     previous_status = getattr(instance, "_previous_status", None)
 

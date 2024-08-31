@@ -30,9 +30,25 @@ TASK_BOARD_DOCS = {
             OpenApiExample(
                 "Example for retrieve",
                 value={
+                    "tasks": [
+                        {
+                            "task_uuid": "d42ec5fe-aebc-4698-bc08-8954c2c7a066",
+                            "name": "example task name",
+                            "description": "example task description",
+                            "status": "IN_PROGRESS",
+                            "created_at": "2024-08-14T00:59:41.225839+03:00",
+                            "updated_at": "2024-08-15T13:06:46.282041+03:00",
+                            "postponed_to": None,
+                        },
+                    ],
                     "board_uuid": "123e4567-e89b-12d3-a456-426614174000",
                     "name": "Project Alpha",
                     "description": "Tasks for Project Alpha",
+                    "task_count": 3,
+                    "in_progress_task_count": 1,
+                    "done_task_count": 0,
+                    "created_at": "2024-08-10T20:14:29.835813+03:00",
+                    "updated_at": "2024-08-15T23:31:23.978192+03:00",
                 },
             )
         ],
