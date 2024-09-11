@@ -29,3 +29,9 @@ class TaskBoardConfig(AppConfig):
                 print(f"Successful GET request to {url}")
             except requests.exceptions.RequestException as e:
                 print(f"Error during GET request to {url}: {str(e)}")
+
+
+# TODO: implement old password check when trying to change password in me settings
+# TODO: add archive for tasks
+# TODO: add TASK status draft
+# TODO: add pinned tasks
