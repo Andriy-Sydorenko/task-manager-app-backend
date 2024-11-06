@@ -62,4 +62,7 @@ class DailyTaskStats(models.Model):
     done_count = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ("date",)
+        unique_together = (
+            "user",
+            "date",
+        )
